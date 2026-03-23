@@ -1598,8 +1598,7 @@ function fetchServer(){
         document.getElementById('stat-version').textContent='1.21';
       }
     })
-    .catch(()=>{
-      .catch(()=>setStatFallback());
+    .catch(()=>setStatFallback());
 }
 setStatFallback();
 setTimeout(fetchServer,500);
