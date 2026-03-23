@@ -1585,7 +1585,7 @@ function setStatFallback(){
 function fetchServer(){
   const ip=getData().ip||'play.matrixmc.in';
   // Try two APIs in sequence for reliability
-  fetch(`https://api.mcsrvstat.us/3/${ip}`,{signal:AbortSignal.timeout(8000)})
+  fetch(`https://api.mcstatus.io/v2/status/java/${ip}`,{signal:AbortSignal.timeout(8000)})
     .then(r=>{if(!r.ok)throw new Error('bad response');return r.json();})
     .then(data=>{
       if(data.online){
@@ -1599,25 +1599,7 @@ function fetchServer(){
       }
     })
     .catch(()=>{
-      // Fallback: try second API
-      fetch(`https://api.mcstatus.io/v2/status/java/${ip}`,{signal:AbortSignal.timeout(8000)})
-        .then(r=>r.json())
-        .then(data=>{
-          if(data.online){
-            document.getElementById('stat-players').textContent=`${data.players?.online??0}/${data.players?.max??20}`;
-            const s=document.getElementById('stat-status');s.textContent='ONLINE';s.style.color='var(--green)';
-            document.getElementById('stat-version').textContent=data.version?.name_clean||'1.21';
-          } else {
-            document.getElementById('stat-players').textContent='0/20';
-            const s=document.getElementById('stat-status');s.textContent='OFFLINE';s.style.color='#ff4141';
-            document.getElementById('stat-version').textContent='1.21';
-          }
-        })
-        .catch(()=>{
-          // Both APIs failed (e.g. local file or network issue) — stay on clean fallback
-          setStatFallback();
-        });
-    });
+      .catch(()=>setStatFallback());
 }
 setStatFallback();
 setTimeout(fetchServer,500);
